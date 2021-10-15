@@ -7,6 +7,8 @@ const morgan = require("morgan")
 
 const app = express()
 
+const booksRouter = require("./resources/books/router");
+const petsRouter = require("./resources/pets/router");
 /* SETUP MIDDLEWARE */
 
 app.disable("x-powered-by")
@@ -17,6 +19,8 @@ app.use(express.urlencoded({ extended: true }))
 app.use(morgan("dev"))
 
 /* SETUP ROUTES */
+app.use('/books',booksRouter);
+app.use("/pets", petsRouter);
 
 app.get("*", (req, res) => {
   res.json({ ok: true })
@@ -31,22 +35,22 @@ app.listen(port, () => {
 })
 
 
-const { PrismaClient } = require('@prisma/client')
+// const { PrismaClient } = require('@prisma/client')
 
-const prisma = new PrismaClient()
+// const prisma = new PrismaClient()
 
-async function main() {
-  // ... you will write your Prisma Client queries here
+// async function main() {
+//   // ... you will write your Prisma Client queries here
 
-  const users = await prisma.user.findMany()
+//   const users = await prisma.user.findMany()
 
-  console.log(users);
-}
+//   console.log(users);
+// }
 
-main()
-  .catch((e) => {
-    throw e
-  })
-  .finally(async () => {
-    await prisma.$disconnect()
-  })
+// main()
+//   .catch((e) => {
+//     throw e
+//   })
+//   .finally(async () => {
+//     await prisma.$disconnect()
+//   })

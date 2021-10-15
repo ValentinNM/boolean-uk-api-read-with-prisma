@@ -1,6 +1,7 @@
-// const { PrismaClient } = require("@prisma/client")
+const { PrismaClient } = require("@prisma/client")
 
-// const prisma = 
+const prisma = new PrismaClient({
+    log: ["query"],
+  })
 
-
-// module export = prisma
+module.exports = {prisma};
