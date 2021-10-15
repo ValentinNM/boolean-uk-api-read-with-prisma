@@ -1,0 +1,35 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User { 
+  id Int @id @default(autoincrement())
+  email String @unique
+}
+
+model Book { 
+  id Int @id @default(autoincrement())
+  title String @db.VarChar(225)
+  type String @db.VarChar(225)
+  author String @db.VarChar(225)
+  topic String @db.VarChar(225)
+  publicationDate DateTime @updatedAt
+}
+
+model Pet { 
+  id Int @id @default(autoincrement())
+  name String @db.VarChar(225)
+  age Int 
+  type String @db.VarChar(225)
+  breed String @db.VarChar(225)
+  microchip Boolean
+}
