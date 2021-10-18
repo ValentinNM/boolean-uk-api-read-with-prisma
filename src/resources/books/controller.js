@@ -1,4 +1,5 @@
-const { prisma } = require("../../utils/database")
+const { prisma } = require("../../utils/database");
+const { param } = require("./router");
 
 async function getAll(req, res) { 
 
@@ -97,7 +98,7 @@ async function getFictionBooksByTopic(req, res) {
     }
 }
 
-
+// below is for /books/author/name-of-author?order=recent
 async function getBooksByAuthor(req, res) { 
     
     /* author params has to be split and joined
@@ -122,6 +123,124 @@ async function getBooksByAuthor(req, res) {
     }
 }
 
+async function getTopicOrderdByDate(req, res) { 
+
+    try { 
+
+        const booksToGet = await prisma.book.findMany({
+            where : { 
+                topic: 'historical'
+            },
+            orderBy : { 
+                publicationDate: 'asc'
+            }
+        })
+        res.json({ test: booksToGet})
+    } catch(error) { 
+        console.error();
+    }
+}
+
+async function getMostRecent(req, res) {
+    
+    try{ 
+        mostRecentBooks = await prisma.book.findMany({
+            where: { 
+                type: 'fiction'
+            },
+            orderBy : { 
+                publicationDate: 'desc'
+            },
+            take: 10
+        })
+
+        res.json({ result : mostRecentBooks})
+    } catch(error) { 
+        console.error();
+    }
+} 
+
+const getNonFictionfrom2004 = async function (req, res) {
+
+    try { 
+        const nonFictionBooksFrom2004 = await prisma.book.findMany({
+            where: {
+                type: 'non-fiction'
+                },
+                AND : { 
+                    publicationDate : { 
+                        include : '2004'
+                },
+        }})
+        res.json({nonFictionBooksFrom2004})
+    } catch(error) {
+        console.error();
+    }
+}
+
+const createOne = async function(req, res) { 
+
+    // const { title, type, author, topic, publicationDate} = req.body;
+
+    console.log("inside createOne: ", req.body);
+
+    try { 
+        const bookToCreate = await prisma.book.create({
+            // data : { title, type, author, topic, publicationDate}
+            data : { ...req.body}   // same as above // using the spread operator to make
+                                    //  a copy of the object so we avoid the destructuring
+        })
+        res.json({ newBook : bookToCreate})
+    } catch(error) { 
+        console.error()
+
+        res.error(500).json({ error : console.error})
+    }
+}
+
+const updateOneById = async function(req, res) {
+
+    const id = req.params.id;
+    console.log("id: ", id)
+
+    console.log("inside createOneById body: ", {...req.body})
+
+    try {
+        const updateById = await prisma.book.update({
+            where : { 
+                id : parseInt(id) ,
+            },
+            data: {...req.body}
+        })
+        res.json({ updated_book: updateById })
+    } catch(error) { 
+        console.error()
+
+        res.status(500).json({ error : error.message})
+    }
+}
+
+// const deleteOneById = async (req, res) => {  // same as belwo 
+const deleteOneById = async function (req, res) { 
+
+    const id = req.params.id;
+
+    console.log(" id inside deleteOneById: ", id)
+
+    try { 
+        const bookToDelete = await prisma.book.delete({
+            where : { 
+                id : parseInt(id)
+            }
+        })
+        res.json({ delete : true })
+    } catch(error) { 
+        console.error()
+
+        res.status(500).json({ error: error.message})
+    }
+}
+
 module.exports = {
     getAll,
     getOneById,
@@ -129,5 +248,11 @@ module.exports = {
     getFictionBooksByTopic,
     getNonFictionBooks,
     getNonFictionBooksByTopic,
-    getBooksByAuthor
+    getBooksByAuthor,
+    getTopicOrderdByDate,
+    getMostRecent,
+    getNonFictionfrom2004,
+    createOne,
+    updateOneById,
+    deleteOneById
     }
