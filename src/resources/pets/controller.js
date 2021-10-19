@@ -38,4 +38,43 @@ function getOnebyId(req, res) {
     })
 }
 
-module.exports = {getAll, getOnebyId};
+async function createOne (req, res) { 
+
+    try { 
+        const petToCreate = await prisma.pet.create({
+            data : { ...req.body}
+        })
+        res.json({ new_pet : petToCreate})
+    } catch(error) { 
+        console.error()
+
+        res.status(500).json({ error : error.message })
+    }
+}
+
+async function updateOneById(req, res) { 
+
+    console.log(" body id: ", req.params.id)
+
+        
+    try{
+        const createPetById = await prisma.pet.update({ // watch the method !! 
+            where : { 
+                id : parseInt(req.params.id)
+            }, 
+            data : {...req.body}
+        })
+        res.json({ newObject : createPetById})
+    } catch(error) { 
+        console.error();
+
+        res.status(500).json({ error : error.messsage })
+    }
+}
+
+module.exports = {
+        getAll,
+        getOnebyId,
+        createOne,
+        updateOneById
+        };
